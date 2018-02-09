@@ -3,6 +3,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 
@@ -10,16 +11,21 @@ import java.util.stream.Collectors;
 class Fulfilment {
 
     static class Clerk {
-        public Map<String,Integer> rationaliseDeliveryRequests(List<DeliveryRequest> deliveryRequests) {
+
+        private final Collector<DeliveryRequest, ?, Map<String, List<DeliveryRequest>>> groupByItemCode = Collectors.groupingBy(DeliveryRequest::getCode);
+
+        Map<String,Integer> rationaliseDeliveryRequests(List<DeliveryRequest> deliveryRequests) {
             final HashMap<String, Integer> countedItems = new HashMap<>();
-            final Map<String, List<DeliveryRequest>> requestsByCode =
-                    deliveryRequests.stream()
-                            .collect(Collectors.groupingBy(DeliveryRequest::getCode));
+            final Map<String, List<DeliveryRequest>> requestsByCode = deliveryRequests.stream().collect(groupByItemCode);
+
+            requestsByCode.keySet().forEach(code -> countedItems.put(code, 0));
+
             requestsByCode.forEach((code, requests) -> {
-                countedItems.putIfAbsent(code, 0);
                 Integer current = countedItems.get(code);
-                countedItems.put(code, current + requests.stream().mapToInt(r -> r.quantity).sum());
+                final int newTotal = current + requests.stream().mapToInt(r -> r.quantity).sum();
+                countedItems.put(code, newTotal);
             });
+
             return countedItems;
         }
     }
