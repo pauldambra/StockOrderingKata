@@ -30,31 +30,33 @@ class Fulfilment {
         }
     }
 
-    private static final Map<String, Integer> unitsPerPallet = new HashMap<>();
-    static {
-        unitsPerPallet.put("A", 6);
-        unitsPerPallet.put("B", 10);
+    static class PalletStacker {
+        private static final Map<String, Integer> unitsPerPallet = new HashMap<>();
+        static {
+            unitsPerPallet.put("A", 6);
+            unitsPerPallet.put("B", 10);
+        }
+
+        String[] consignmentFor(Map<String, Integer> requestedItems) {
+            final ArrayList<String> consignment = new ArrayList<>();
+
+            requestedItems.forEach((code, quantity) -> {
+                final Integer unitsPerPalletForThisCode = unitsPerPallet.get(code);
+                final int numberOfPallets = countAtLeastOnePallet(quantity, unitsPerPalletForThisCode);
+                addPalletsToConsignment(consignment, code, numberOfPallets);
+            });
+
+            return consignment.toArray(new String[]{});
+        }
     }
 
-
-    /*
-    group requests by code
-    so we can count units by code
-    as long as there is at least 1 unit
-    add at least 1 pallet
-    _and_ add enough pallets based on how many of this code will fit on a pallet
-     */
     public static DispatchRequest forDelivery(final List<DeliveryRequest> deliveryRequests) {
-        final ArrayList<String> consignment = new ArrayList<>();
 
         final Map<String, Integer> countedItems = new Clerk().rationaliseDeliveryRequests(deliveryRequests);
-        countedItems.forEach((code, quantity) -> {
-            final Integer unitsPerPalletForThisCode = Fulfilment.unitsPerPallet.get(code);
-            final int numberOfPallets = countAtLeastOnePallet(quantity, unitsPerPalletForThisCode);
-            addPalletsToConsignment(consignment, code, numberOfPallets);
-        });
 
-       return new DispatchRequest("Modified Transit", consignment.toArray(new String[]{}), deliveryRequests.get(0).superMarketId);
+        final String[] consignment = new PalletStacker().consignmentFor(countedItems);
+
+       return new DispatchRequest("Modified Transit", consignment, deliveryRequests.get(0).superMarketId);
    }
 
     private static void addPalletsToConsignment(final ArrayList<String> consignment, final String code, final int numberOfPallets) {
