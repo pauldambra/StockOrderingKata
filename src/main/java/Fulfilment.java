@@ -7,14 +7,13 @@ import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 
-
 class Fulfilment {
 
     static class Clerk {
 
         private final Collector<DeliveryRequest, ?, Map<String, List<DeliveryRequest>>> groupByItemCode = Collectors.groupingBy(DeliveryRequest::getCode);
 
-        Map<String,Integer> rationaliseDeliveryRequests(List<DeliveryRequest> deliveryRequests) {
+        Map<String, Integer> rationaliseDeliveryRequests(List<DeliveryRequest> deliveryRequests) {
             final HashMap<String, Integer> countedItems = new HashMap<>();
             final Map<String, List<DeliveryRequest>> requestsByCode = deliveryRequests.stream().collect(groupByItemCode);
 
@@ -32,6 +31,7 @@ class Fulfilment {
 
     static class PalletStacker {
         private static final Map<String, Integer> unitsPerPallet = new HashMap<>();
+
         static {
             unitsPerPallet.put("A", 6);
             unitsPerPallet.put("B", 10);
@@ -47,6 +47,16 @@ class Fulfilment {
             });
 
             return consignment.toArray(new String[]{});
+        }
+
+        private static void addPalletsToConsignment(final ArrayList<String> consignment, final String code, final int numberOfPallets) {
+            for (int i = 0; i < numberOfPallets; i++) {
+                consignment.add(code);
+            }
+        }
+
+        private static int countAtLeastOnePallet(final int totalUnits, final Integer unitsPerPallet) {
+            return (int) Math.ceil(totalUnits / unitsPerPallet.doubleValue());
         }
     }
 
@@ -65,16 +75,6 @@ class Fulfilment {
 
         final String[] consignment = new PalletStacker().consignmentFor(countedItems);
 
-       return new Dispatcher().organiseDispatchesFor(consignment);
-   }
-
-    private static void addPalletsToConsignment(final ArrayList<String> consignment, final String code, final int numberOfPallets) {
-        for (int i = 0; i < numberOfPallets; i++) {
-            consignment.add(code);
-        }
-    }
-
-    private static int countAtLeastOnePallet(final int totalUnits, final Integer unitsPerPallet) {
-        return (int) Math.ceil(totalUnits / unitsPerPallet.doubleValue());
+        return new Dispatcher().organiseDispatchesFor(consignment);
     }
 }
