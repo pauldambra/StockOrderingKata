@@ -50,13 +50,22 @@ class Fulfilment {
         }
     }
 
+    static class Dispatcher {
+        private static String possibleVehicle = "Modified Transit";
+        private final String arbitraryDestination = "anything";
+
+        DispatchRequest organiseDispatchesFor(String[] consignment) {
+            return new DispatchRequest(possibleVehicle, consignment, arbitraryDestination);
+        }
+    }
+
     public static DispatchRequest forDelivery(final List<DeliveryRequest> deliveryRequests) {
 
         final Map<String, Integer> countedItems = new Clerk().rationaliseDeliveryRequests(deliveryRequests);
 
         final String[] consignment = new PalletStacker().consignmentFor(countedItems);
 
-       return new DispatchRequest("Modified Transit", consignment, deliveryRequests.get(0).superMarketId);
+       return new Dispatcher().organiseDispatchesFor(consignment);
    }
 
     private static void addPalletsToConsignment(final ArrayList<String> consignment, final String code, final int numberOfPallets) {
