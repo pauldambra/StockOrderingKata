@@ -75,3 +75,5 @@ crashlytics.properties
 crashlytics-build.properties
 fabric.properties
 
+.gradle/4.0/fileHashes/*.*
+.idea/modules/*.*

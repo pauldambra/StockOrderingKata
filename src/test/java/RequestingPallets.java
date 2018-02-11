@@ -2,9 +2,11 @@ import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import static java.util.Collections.singletonList;
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class RequestingPallets {
 
@@ -16,9 +18,9 @@ public class RequestingPallets {
         final DispatchRequest expectedDispatch =
                 new DispatchRequest("Modified Transit", new String[]{"A"}, "anything");
 
-        final DispatchRequest actualDispatch = Fulfilment.forDelivery(singletonList(singleA));
+        final DispatchRequest[] actualDispatch = Fulfilment.forDelivery(singletonList(singleA));
 
-        assertEquals(expectedDispatch, actualDispatch);
+        assertThat(actualDispatch).containsAll(Collections.singletonList(expectedDispatch));
     }
 
     @Test
@@ -29,9 +31,9 @@ public class RequestingPallets {
         final DispatchRequest expectedDispatch =
                 new DispatchRequest("Modified Transit", new String[]{"A", "A"}, "anything");
 
-        final DispatchRequest actualDispatch = Fulfilment.forDelivery(singletonList(deliveryRequest));
+        final DispatchRequest[] actualDispatch = Fulfilment.forDelivery(singletonList(deliveryRequest));
 
-        assertEquals(expectedDispatch, actualDispatch);
+        assertThat(actualDispatch).containsAll(Collections.singletonList(expectedDispatch));
     }
 
     @Test
@@ -41,9 +43,9 @@ public class RequestingPallets {
         final DispatchRequest expectedDispatch =
                 new DispatchRequest("Modified Transit", new String[]{"A", "A", "A"}, "anything");
 
-        final DispatchRequest actualDispatch = Fulfilment.forDelivery(singletonList(deliveryRequest));
+        final DispatchRequest[] actualDispatch = Fulfilment.forDelivery(singletonList(deliveryRequest));
 
-        assertEquals(expectedDispatch, actualDispatch);
+        assertThat(actualDispatch).containsAll(Collections.singletonList(expectedDispatch));
     }
 
     @Test
@@ -54,9 +56,9 @@ public class RequestingPallets {
         final DispatchRequest expectedDispatch =
                 new DispatchRequest("Modified Transit", new String[]{"A", "A", "A"}, "anything");
 
-        final DispatchRequest actualDispatch = Fulfilment.forDelivery(Arrays.asList(firstRequest, secondRequest));
+        final DispatchRequest[] actualDispatch = Fulfilment.forDelivery(Arrays.asList(firstRequest, secondRequest));
 
-        assertEquals(expectedDispatch, actualDispatch);
+        assertThat(actualDispatch).containsAll(Collections.singletonList(expectedDispatch));
     }
 
     @Test
@@ -68,9 +70,9 @@ public class RequestingPallets {
         final DispatchRequest expectedDispatch =
                 new DispatchRequest("Modified Transit", new String[]{"A", "B"}, "anything");
 
-        final DispatchRequest actualDispatch = Fulfilment.forDelivery(Arrays.asList(singleA, singleB));
+        final DispatchRequest[] actualDispatch = Fulfilment.forDelivery(Arrays.asList(singleA, singleB));
 
-        assertEquals(expectedDispatch, actualDispatch);
+        assertThat(actualDispatch).containsAll(Collections.singletonList(expectedDispatch));
 
     }
 
@@ -82,9 +84,9 @@ public class RequestingPallets {
         final DispatchRequest expectedDispatch =
                 new DispatchRequest("Modified Transit", new String[]{"B", "B", "B"}, "anything");
 
-        final DispatchRequest actualDispatch = Fulfilment.forDelivery(Collections.singletonList(singleB));
+        final DispatchRequest[] actualDispatch = Fulfilment.forDelivery(Collections.singletonList(singleB));
 
-        assertEquals(expectedDispatch, actualDispatch);
+        assertThat(actualDispatch).containsAll(Collections.singletonList(expectedDispatch));
 
     }
 
@@ -97,9 +99,9 @@ public class RequestingPallets {
         final DispatchRequest expectedDispatch =
                 new DispatchRequest("Modified Transit", new String[]{"A", "B", "B"}, "anything");
 
-        final DispatchRequest actualDispatch = Fulfilment.forDelivery(Arrays.asList(singleA, singleB));
+        final DispatchRequest[] actualDispatch = Fulfilment.forDelivery(Arrays.asList(singleA, singleB));
 
-        assertEquals(expectedDispatch, actualDispatch);
+        assertThat(actualDispatch).containsAll(Collections.singletonList(expectedDispatch));
 
     }
 
@@ -112,9 +114,30 @@ public class RequestingPallets {
         final DispatchRequest expectedDispatch =
                 new DispatchRequest("Lorry", new String[]{"A", "B", "B", "B"}, "anything");
 
-        final DispatchRequest actualDispatch = Fulfilment.forDelivery(Arrays.asList(singleA, singleB));
+        final DispatchRequest[] actualDispatch = Fulfilment.forDelivery(Arrays.asList(singleA, singleB));
 
-        assertEquals(expectedDispatch, actualDispatch);
-
+        assertThat(actualDispatch).containsAll(Collections.singletonList(expectedDispatch));
     }
+
+//    @Test
+//    public void vehiclesFillUpAndSoLargeConsignmentsRequireMultipleDispatches() {
+//        final int thirtyOnePalletsOfBs = 301;
+//        DeliveryRequest bs = new DeliveryRequest("anything", "B", thirtyOnePalletsOfBs);
+//
+//        final String[] expectedConsignmentForFirstLorry =
+//                IntStream
+//                    .range(0, 30)
+//                    .mapToObj(i -> "B")
+//                    .toArray(String[]::new);
+//
+//        final DispatchRequest expectedDispatchOfFullLorry =
+//                new DispatchRequest("Lorry", expectedConsignmentForFirstLorry, "anything");
+//        final DispatchRequest expectedDispatchOfSinglePallet =
+//                new DispatchRequest("Modified Transit", new String[] {"B"}, "anything");
+//
+//        final DispatchRequest[] actualDispatch = Fulfilment.forDelivery(Collections.singletonList(bs));
+//
+//        assertThat(actualDispatch)
+//                .containsAll(Arrays.asList(expectedDispatchOfFullLorry, expectedDispatchOfSinglePallet));
+//    }
 }
