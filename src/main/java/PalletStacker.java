@@ -8,6 +8,7 @@ class PalletStacker {
     static {
         unitsPerPallet.put("A", 6);
         unitsPerPallet.put("B", 10);
+        unitsPerPallet.put("C", 5);
     }
 
     String[] consignmentFor(Map<String, Integer> requestedItems) {

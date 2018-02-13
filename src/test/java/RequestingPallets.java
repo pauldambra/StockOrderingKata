@@ -111,14 +111,56 @@ public class RequestingPallets {
     public void vehiclesFillUpAndSoMoreThanThreeRefrigeratedPalletsRequireMultipleDispatches() {
 
         DeliveryRequest singleA = new DeliveryRequest("anything", "A", 1);
-        DeliveryRequest singleB = new DeliveryRequest("anything", "B", 21);
+        DeliveryRequest manyBs = new DeliveryRequest("anything", "B", 21);
 
         final List<DispatchRequest> expectedDispatches = Arrays.asList(
             new DispatchRequest("Modified Transit", new String[]{"A", "B", "B"}, "anything"),
             new DispatchRequest("Modified Transit", new String[]{"B"}, "anything")
         );
 
-        final DispatchRequest[] actualDispatch = Fulfilment.forDelivery(Arrays.asList(singleA, singleB));
+        final DispatchRequest[] actualDispatch = Fulfilment.forDelivery(Arrays.asList(singleA, manyBs));
+
+        assertThat(actualDispatch).containsAll(expectedDispatches);
+    }
+
+    @Test
+    public void canFulfillNonRefrigeratedGoods() {
+        DeliveryRequest singleC = new DeliveryRequest("anything", "C", 1);
+
+        final List<DispatchRequest> expectedDispatches = Collections.singletonList(
+                new DispatchRequest("Transit", new String[]{"C"}, "anything")
+        );
+
+        final DispatchRequest[] actualDispatch = Fulfilment.forDelivery(Collections.singletonList(singleC));
+
+        assertThat(actualDispatch).containsAll(expectedDispatches);
+    }
+
+    @Test
+    public void canFulfillMultipleVehiclesWithNonRefrigeratedGoods() {
+        DeliveryRequest singleC = new DeliveryRequest("anything", "C", 21);
+
+        final List<DispatchRequest> expectedDispatches = Arrays.asList(
+                new DispatchRequest("Transit", new String[]{"C", "C", "C", "C"}, "anything"),
+                new DispatchRequest("Transit", new String[]{"C"}, "anything")
+        );
+
+        final DispatchRequest[] actualDispatch = Fulfilment.forDelivery(Collections.singletonList(singleC));
+
+        assertThat(actualDispatch).containsAll(expectedDispatches);
+    }
+
+    @Test
+    public void canFulfillAMixOfRefrigeratedAndNonRefrigeratedGoods() {
+        DeliveryRequest singleC = new DeliveryRequest("anything", "C", 1);
+        DeliveryRequest singleA = new DeliveryRequest("anything", "A", 1);
+
+        final List<DispatchRequest> expectedDispatches = Arrays.asList(
+                new DispatchRequest("Transit", new String[]{"C"}, "anything"),
+                new DispatchRequest("Modified Transit", new String[]{"A"}, "anything")
+        );
+
+        final DispatchRequest[] actualDispatch = Fulfilment.forDelivery(Arrays.asList(singleC, singleA));
 
         assertThat(actualDispatch).containsAll(expectedDispatches);
     }
