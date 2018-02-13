@@ -1,7 +1,9 @@
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -106,21 +108,23 @@ public class RequestingPallets {
     }
 
     @Test
-    public void moreThanThreeRefrigeratedPalletsMustTravelByLorry() {
+    public void vehiclesFillUpAndSoMoreThanThreeRefrigeratedPalletsRequireMultipleDispatches() {
 
         DeliveryRequest singleA = new DeliveryRequest("anything", "A", 1);
         DeliveryRequest singleB = new DeliveryRequest("anything", "B", 21);
 
-        final DispatchRequest expectedDispatch =
-                new DispatchRequest("Lorry", new String[]{"A", "B", "B", "B"}, "anything");
+        final List<DispatchRequest> expectedDispatches = Arrays.asList(
+            new DispatchRequest("Modified Transit", new String[]{"A", "B", "B"}, "anything"),
+            new DispatchRequest("Modified Transit", new String[]{"B"}, "anything")
+        );
 
         final DispatchRequest[] actualDispatch = Fulfilment.forDelivery(Arrays.asList(singleA, singleB));
 
-        assertThat(actualDispatch).containsAll(Collections.singletonList(expectedDispatch));
+        assertThat(actualDispatch).containsAll(expectedDispatches);
     }
 
 //    @Test
-//    public void vehiclesFillUpAndSoLargeConsignmentsRequireMultipleDispatches() {
+//    public void () {
 //        final int thirtyOnePalletsOfBs = 301;
 //        DeliveryRequest bs = new DeliveryRequest("anything", "B", thirtyOnePalletsOfBs);
 //

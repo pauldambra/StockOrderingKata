@@ -7,6 +7,6 @@ class Fulfilment {
 
         final String[] consignment = new PalletStacker().consignmentFor(countedItems);
 
-        return new DispatchRequest[] {new Dispatcher().organiseDispatchesFor(consignment) };
+        return new Dispatcher().organiseDispatchesFor(consignment);
     }
 }
